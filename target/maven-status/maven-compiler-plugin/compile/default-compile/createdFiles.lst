@@ -1,0 +1,7 @@
+com\expense\model\expense.class
+com\expense\expenseGUI\expenseGUI.class
+com\expense\expenseGUI\enterGUI.class
+com\expense\util\DatabaseConnection.class
+com\expense\Main.class
+com\expense\expenseDAO\expenseDAO.class
+com\expense\expenseGUI\categoryGUI.class
