@@ -37,6 +37,7 @@ public class enterGUI extends JFrame{
         expenses.addActionListener((e)->{
             new expenseGUI().setVisible(true);
         });
+
     }
     private void initUI(){
         setTitle("Expense Tracker");
@@ -156,6 +157,11 @@ class expenseGUI extends JFrame{
     private JComboBox<String> category;
     private DefaultTableModel expense_table;
     private JTextField expense_amount;
+    private JTable table;
+    private JButton deleteButton;
+    private JButton updateButton;
+    private JButton refreshButton;
+    
 
 
     private String[] columnNames={"id","Name","Descripton","Category","Amount"};
@@ -163,6 +169,37 @@ class expenseGUI extends JFrame{
         addButton.addActionListener((e)->{
             addExpense();
         });
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.getSelectionModel().addListSelectionListener((e)->{
+            loadSelected();
+        });
+        deleteButton.addActionListener((e)->{
+            deleteExpense();
+        });
+    }
+    private void deleteExpense(){
+        int row = table.getSelectedRow();
+        int id = (int) table.getValueAt(row,0);
+        try{
+        int rowAffected = expenseDAO.deleteExpense(id);
+        if(rowAffected>0){
+            loadTable();
+            JOptionPane.showMessageDialog(this,"Successfully deleted","Success",JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }}
+        catch (SQLException e){
+            JOptionPane.showMessageDialog(this,"Couldn't delete","Deletion error",JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void loadSelected(){
+        int row = table.getSelectedRow();
+        if (row==-1){
+            return;
+        }
+        expense_title.setText((String) table.getValueAt(row,1));
+        expense_area.setText((String) table.getValueAt(row,2));
+        category.setSelectedItem((String) table.getValueAt(row,3));
+        expense_amount.setText((String) table.getValueAt(row,4));
     }
     private void loadTable(){
         try{
@@ -263,15 +300,26 @@ class expenseGUI extends JFrame{
         gbc.gridx=1;
         panel.add(expense_amount,gbc);
         gbc.gridx=0;
-        JPanel btns = new JPanel(new FlowLayout());
-      
+        JPanel btns = new JPanel(new FlowLayout(FlowLayout.CENTER,20,10));
+  
         addButton = new JButton("Add Expense");
         btns.add(addButton);
+        deleteButton = new JButton("Delete");
+        updateButton = new JButton("Update");
+        refreshButton= new JButton("Referesh");
+        btns.add(deleteButton);
+        btns.add(updateButton);
+        btns.add(refreshButton);
         gbc.gridy=4;
-        panel.add(btns,gbc);
-        add(panel,BorderLayout.NORTH);
+
+    
+        JPanel northPanel = new JPanel(new BorderLayout());
+        northPanel.add(panel,BorderLayout.NORTH);
+        northPanel.add(btns,BorderLayout.CENTER);
+        add(northPanel,BorderLayout.NORTH);
+        
         expense_table = new DefaultTableModel(columnNames,0);
-        JTable table = new JTable(expense_table);
+        table = new JTable(expense_table);
         add(new JScrollPane(table),BorderLayout.CENTER);
 
     }

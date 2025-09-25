@@ -11,6 +11,18 @@ public class expenseDAO {
     private static final String CATEGORY_ID="select id from category where name=?";
     private static final String CATEGORY_NAME = " select name from category where id=?";
     private static final String ADD_EXPENSE = "insert into expenses(expense,description,category_id,amount) values(?,?,?,?)";
+    private static final String DELETE_EXPENSE="delete from expenses where id =?";
+    public static int deleteExpense(int id) throws SQLException{
+        try(
+            Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(DELETE_EXPENSE);
+        ){
+            stmt.setInt(1,id);
+            int rowAffected=stmt.executeUpdate();
+            return rowAffected;
+        }
+        
+    }
     public static List<expense> getExpenseTable() throws SQLException{
         try(
             Connection conn = DatabaseConnection.getConnection();
