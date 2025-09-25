@@ -176,6 +176,34 @@ class expenseGUI extends JFrame{
         deleteButton.addActionListener((e)->{
             deleteExpense();
         });
+        refreshButton.addActionListener((e)->{
+            loadTable();
+        });
+        updateButton.addActionListener((e)->{
+            updateExpense();
+        });
+    }
+    private void updateExpense(){
+        int row = table.getSelectedRow();
+        if (row!=-1){
+            try{
+                int id = (int) table.getValueAt(row,0);
+                String name = expense_title.getText().trim();
+                String description = expense_area.getText().trim();
+                String categoryy= (String) category.getSelectedItem();
+                String amount = expense_amount.getText().trim();
+                int rowAffected = expenseDAO.updateExpense(name,description,categoryy,amount,id);
+                System.out.println(name);
+                if(rowAffected>0){
+                    System.out.println(rowAffected);
+                    JOptionPane.showMessageDialog(this,"Successfuly updated","Success",JOptionPane.INFORMATION_MESSAGE);
+                    loadTable();
+                }
+            }
+            catch(SQLException e){
+                JOptionPane.showMessageDialog(this,"Error Updating","Error",JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
     private void deleteExpense(){
         int row = table.getSelectedRow();
