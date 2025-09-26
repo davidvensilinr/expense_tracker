@@ -75,11 +75,12 @@ class categoryGUI extends JFrame {
     }
     private void loadTable(){
         try{
+            cattable.setRowCount(0);
         List <expense> d = expenseDAO.loadCatTable();
         updateTable(d);
     }
         catch(Exception e){
-            System.out.println("Error");
+            System.err.println(e.getMessage());
         }
     }
     private void setupLayout(){
@@ -99,16 +100,21 @@ class categoryGUI extends JFrame {
         updateButton.addActionListener((e)->{
             updateCategory();
         });
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getSelectionModel().addListSelectionListener((e)->{
+            if (!e.getValueIsAdjusting()){
             System.out.println("ih");
             getSelectedRow();
+            }
         });
 
 
     }
     private void getSelectedRow(){
         int row= table.getSelectedRow();
+        if (row!=-1){
         category.setText((String) table.getValueAt(row,1));
+        }
     }
     private void updateCategory(){
         int row = table.getSelectedRow();
@@ -168,6 +174,7 @@ class categoryGUI extends JFrame {
     }
     private void updateTable(List<expense> d){
         cattable.setRowCount(0);
+        System.out.println("Came here");
         for(expense n:d){
             Object[] m={
                 n.getId(),

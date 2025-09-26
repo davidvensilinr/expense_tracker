@@ -148,6 +148,7 @@ public class expenseDAO {
         ResultSet rs = stmt.executeQuery();
         while (rs.next()){
             expense t = new expense(rs.getInt("id"),rs.getString("name"));
+            System.out.println(t.getId()+' '+t.getName());
             d.add(t);
         }
         return d;

@@ -1,8 +1,8 @@
 package com.expense.model;
 
 public class expense {
-    private int id;
-    private String name;
+    private int id=0;
+    private String name="";
     private String amount;
     private String description;
     private String category;
@@ -16,7 +16,8 @@ public class expense {
         return this.description;
     }
     public expense(){
-        
+        this.id=0;
+        this.name="";
     }
     public expense(int id,String name){
         this.id =id;
