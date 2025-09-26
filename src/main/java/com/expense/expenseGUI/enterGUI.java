@@ -62,8 +62,11 @@ public class enterGUI extends JFrame{
 class categoryGUI extends JFrame {
     private JTextField category;
     private JButton addButton;
+    private JButton deleteButton;
+    private JButton refreshButton;
+    private JButton updateButton;
     private DefaultTableModel cattable = new DefaultTableModel(new String[]{"id","category"}, 0);
-    
+    private JTable table;
     categoryGUI(){
         setupLayout();
         setupComponents();
@@ -73,7 +76,8 @@ class categoryGUI extends JFrame {
     private void loadTable(){
         try{
         List <expense> d = expenseDAO.loadCatTable();
-        updateTable(d);}
+        updateTable(d);
+    }
         catch(Exception e){
             System.out.println("Error");
         }
@@ -88,9 +92,70 @@ class categoryGUI extends JFrame {
         addButton.addActionListener((e)->{
             addCategory();
         });
+        deleteButton.addActionListener((e)->{
+            deleteCategory();
+            
+        });
+        updateButton.addActionListener((e)->{
+            updateCategory();
+        });
+        table.getSelectionModel().addListSelectionListener((e)->{
+            System.out.println("ih");
+            getSelectedRow();
+        });
+
 
     }
+    private void getSelectedRow(){
+        int row= table.getSelectedRow();
+        category.setText((String) table.getValueAt(row,1));
+    }
+    private void updateCategory(){
+        int row = table.getSelectedRow();
+        String cat= (String) category.getText();
+        if(row==-1){
+            JOptionPane.showMessageDialog(this,"Select a row","Selection",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (cat.isEmpty()){
+            JOptionPane.showMessageDialog(this,"Category cannot be empty","Empty fields",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try{
+        int rowAffected = expenseDAO.updateCategory((int) table.getValueAt(row,0),category.getText().trim());
+        if (rowAffected>0)  {
+            JOptionPane.showMessageDialog(this,"Update successfully","Success",JOptionPane.INFORMATION_MESSAGE);
+            loadTable();
+        }
+    }
+        catch(SQLException e){
+            System.err.println(e.getMessage());
+            JOptionPane.showMessageDialog(this,"Cannot be updated","Updation error",JOptionPane.ERROR_MESSAGE);
+            
+        }
+    }
+    private void deleteCategory(){
+        int row= table.getSelectedRow();
+        if (row==-1){
+            JOptionPane.showMessageDialog(this,"Select a row","Invalid",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try{
+            int id = (int) table.getValueAt(row,0);
+        int rowAffected= expenseDAO.deleteCategory(id);
+        if (rowAffected>0){
+            JOptionPane.showMessageDialog(this,"Category successfully deleted","Deleted",JOptionPane.INFORMATION_MESSAGE);
+            loadTable();
+        }
+    }catch(SQLException e){
+        JOptionPane.showMessageDialog(this,"Cannot be deleted","Error",JOptionPane.ERROR_MESSAGE);
+    }
+    }
     private void addCategory(){
+        if (((String) category.getText().trim()).isEmpty()){
+            JOptionPane.showMessageDialog(this,"Category cannot be empty","Empty fields",JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         try{
         String category_new = category.getText().trim();
         expenseDAO.addCat(category_new);
@@ -128,9 +193,12 @@ class categoryGUI extends JFrame {
         panel.add(category,gbc);
         JPanel btns = new JPanel(new FlowLayout());
         addButton = new JButton("add");
+        deleteButton = new JButton("delete");
+        updateButton= new JButton ("update");
         btns.add(addButton);
-
-        JTable table = new JTable(cattable);
+        btns.add(deleteButton);
+        btns.add(updateButton);
+        table = new JTable(cattable);
         gbc.gridy=1;
         gbc.gridx=0;
         panel.add(btns);

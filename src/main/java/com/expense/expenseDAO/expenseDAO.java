@@ -12,7 +12,30 @@ public class expenseDAO {
     private static final String CATEGORY_NAME = " select name from category where id=?";
     private static final String ADD_EXPENSE = "insert into expenses(expense,description,category_id,amount) values(?,?,?,?)";
     private static final String DELETE_EXPENSE="delete from expenses where id =?";
+    private static final String UPDATE_CATEGORY="update category set name =? where id =?";
+    private static final String DELETE_CATEGORY="delete from category where id =?";
     private static final String UPDATE_EXPENSE="update expenses set expense=? ,description=?,category_id=?,amount=? where id=?";
+    public static int updateCategory(int id,String name) throws SQLException{
+        try(
+            Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(UPDATE_CATEGORY);
+        )
+        {
+            stmt.setString(1,name);
+            stmt.setInt(2,id);
+            return stmt.executeUpdate();
+        }
+
+    }
+    public static int deleteCategory(int id) throws SQLException{
+        try(Connection conn = DatabaseConnection.getConnection();
+           PreparedStatement stmt = conn.prepareStatement(DELETE_CATEGORY);
+        )
+        {
+            stmt.setInt(1,id);
+            return stmt.executeUpdate();
+        }
+    }
     private static int getCategoryID(String category) throws SQLException{
 
         try(
@@ -31,6 +54,7 @@ public class expenseDAO {
     }
     public static int updateExpense(String name,String description,String category,String amount,int id) throws SQLException{
         int category_id = getCategoryID(category);
+        
         try(
             Connection conn = DatabaseConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(UPDATE_EXPENSE);
